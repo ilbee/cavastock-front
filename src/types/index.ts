@@ -8,17 +8,11 @@ export interface Shop {
   name: string;
 }
 
-export interface AuthState {
-  token: string | null;
-  user: User | null;
-  isAuthenticated: boolean;
-}
-
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
-export interface LoginResponse {
-  token: string;
+export interface HydraCollection<T> {
+  'hydra:member': T[];
 }

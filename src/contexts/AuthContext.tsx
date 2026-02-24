@@ -1,6 +1,17 @@
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
 import apiClient from '../api/client';
 import type { User, LoginCredentials } from '../types';
+
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
+}
 
 interface AuthContextValue {
   token: string | null;
@@ -14,19 +25,15 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
-  const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setUser({ id: payload.sub ?? payload.uuid, email: payload.username ?? payload.email });
-      } catch {
-        setUser(null);
-      }
-    } else {
-      setUser(null);
-    }
+  const user = useMemo<User | null>(() => {
+    if (!token) return null;
+    const payload = decodeJwtPayload(token);
+    if (!payload) return null;
+    return {
+      id: (payload.sub ?? payload.uuid) as string,
+      email: (payload.username ?? payload.email) as string,
+    };
   }, [token]);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
@@ -40,7 +47,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('token');
     localStorage.removeItem('selectedShopId');
     setToken(null);
-    setUser(null);
   }, []);
 
   return (
@@ -50,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

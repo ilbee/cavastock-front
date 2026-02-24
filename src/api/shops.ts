@@ -1,10 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from './client';
-import type { Shop } from '../types';
-
-interface HydraCollection<T> {
-  'hydra:member': T[];
-}
+import type { Shop, HydraCollection } from '../types';
 
 export function useShops(enabled: boolean) {
   return useQuery({

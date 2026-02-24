@@ -19,14 +19,16 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     () => localStorage.getItem('selectedShopId'),
   );
 
-  const selectedShop = shops.find((s) => s.id === selectedShopId) ?? shops[0] ?? null;
+  const selectedShop = selectedShopId && shops.find((s) => s.id === selectedShopId)
+    ? shops.find((s) => s.id === selectedShopId)!
+    : shops[0] ?? null;
 
+  // Sync effective selection to localStorage (external system only)
   useEffect(() => {
-    if (shops.length > 0 && !selectedShopId) {
-      setSelectedShopId(shops[0].id);
-      localStorage.setItem('selectedShopId', shops[0].id);
+    if (selectedShop) {
+      localStorage.setItem('selectedShopId', selectedShop.id);
     }
-  }, [shops, selectedShopId]);
+  }, [selectedShop]);
 
   const selectShop = useCallback((shopId: string) => {
     setSelectedShopId(shopId);
@@ -40,6 +42,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useShop() {
   const context = useContext(ShopContext);
   if (!context) {
