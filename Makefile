@@ -1,4 +1,4 @@
-.PHONY: init dev build lint
+.PHONY: init dev build lint test typecheck
 
 init:
 	npm install
@@ -12,3 +12,9 @@ build:
 
 lint:
 	npx eslint src/
+
+test:
+	npm run test
+
+typecheck:
+	npx tsc --noEmit
