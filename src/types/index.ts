@@ -14,5 +14,25 @@ export interface LoginCredentials {
 }
 
 export interface HydraCollection<T> {
-  'hydra:member': T[];
+  member: T[];
+}
+
+export type ItemStatus = 'active' | 'sold_online' | 'sold_offline' | 'removed';
+
+export interface Container {
+  id: string;
+  label: string;
+  locationDescription: string;
+  items: string[];
+}
+
+export interface Item {
+  id: string;
+  title: string;
+  description: string;
+  priceCents: number;
+  status: ItemStatus;
+  container: string | null;
+  platformLinks: string[];
+  movementLogs: string[];
 }
