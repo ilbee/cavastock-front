@@ -1,21 +1,34 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContainers } from '../api/containers';
 import DataTable, { type Column } from '../components/DataTable';
-import type { Container } from '../types';
 
-const columns: Column<Container>[] = [
+interface ContainerRow {
+  id: string;
+  label: string;
+  locationDescription: string;
+  itemCount: number;
+}
+
+const columns: Column<ContainerRow>[] = [
   { key: 'label', label: 'Label' },
   { key: 'locationDescription', label: 'Location' },
-  {
-    key: 'items',
-    label: 'Items',
-    render: (value) => String((value as string[]).length),
-  },
+  { key: 'itemCount', label: 'Item count' },
 ];
 
 export default function ContainersPage() {
   const { data: containers = [], isLoading } = useContainers();
   const navigate = useNavigate();
+
+  const rows: ContainerRow[] = useMemo(
+    () => containers.map((c) => ({
+      id: c.id,
+      label: c.label,
+      locationDescription: c.locationDescription,
+      itemCount: c.items.length,
+    })),
+    [containers],
+  );
 
   if (isLoading) {
     return <p className="text-sm text-gray-500">Loading containers...</p>;
@@ -26,10 +39,10 @@ export default function ContainersPage() {
       <h1 className="mb-6 text-2xl font-bold text-gray-900">Containers</h1>
       <DataTable
         columns={columns}
-        data={containers}
+        data={rows}
         searchKeys={['label', 'locationDescription']}
         searchPlaceholder="Search by label or location..."
-        onRowClick={(container) => navigate(`/containers/${container.id}`)}
+        onRowClick={(row) => navigate(`/containers/${row.id}`)}
       />
     </div>
   );
