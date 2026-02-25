@@ -13,6 +13,10 @@ apiClient.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  const shopId = localStorage.getItem('selectedShopId');
+  if (shopId) {
+    config.headers['X-Shop-Id'] = shopId;
+  }
   return config;
 });
 
