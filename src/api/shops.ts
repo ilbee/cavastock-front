@@ -7,7 +7,7 @@ export function useShops(enabled: boolean) {
     queryKey: ['shops'],
     queryFn: async () => {
       const response = await apiClient.get<HydraCollection<Shop>>('/api/shops');
-      return response.data['hydra:member'];
+      return response.data.member;
     },
     enabled,
   });

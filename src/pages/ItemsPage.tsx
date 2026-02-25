@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useItems } from '../api/items';
+import { useContainers } from '../api/containers';
 import DataTable, { type Column } from '../components/DataTable';
 import { formatPrice } from '../utils/format';
 import type { Item, ItemStatus } from '../types';
@@ -33,9 +34,20 @@ function extractContainerId(iri: string | null): string | null {
 }
 
 export default function ItemsPage() {
-  const { data: items = [], isLoading } = useItems();
+  const { data: items = [], isLoading: loadingItems } = useItems();
+  const { data: containers = [], isLoading: loadingContainers } = useContainers();
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<ItemStatus | 'all'>('all');
+
+  const containerLabels = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const c of containers) {
+      map.set(`/api/containers/${c.id}`, c.label);
+    }
+    return map;
+  }, [containers]);
+
+  const isLoading = loadingItems || loadingContainers;
 
   const filteredItems = statusFilter === 'all'
     ? items
@@ -68,6 +80,7 @@ export default function ItemsPage() {
         const iri = value as string | null;
         const containerId = extractContainerId(iri);
         if (!containerId) return <span className="text-gray-400">&mdash;</span>;
+        const label = containerLabels.get(iri!) ?? containerId.slice(0, 8);
         return (
           <button
             onClick={(e) => {
@@ -76,7 +89,7 @@ export default function ItemsPage() {
             }}
             className="text-purple-600 hover:underline"
           >
-            {containerId.slice(0, 8)}...
+            {label}
           </button>
         );
       },

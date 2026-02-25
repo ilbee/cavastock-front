@@ -14,7 +14,8 @@ apiClient.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   const shopId = localStorage.getItem('selectedShopId');
-  if (shopId) {
+  const skipShopHeader = config.url?.includes('/api/login') || config.url?.includes('/api/shops');
+  if (shopId && !skipShopHeader) {
     config.headers['X-Shop-Id'] = shopId;
   }
   return config;
