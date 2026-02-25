@@ -1,7 +1,13 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, Wine } from 'lucide-react';
+import { LogOut, Wine, LayoutDashboard, Box, Tag } from 'lucide-react';
 import ShopSwitcher from '../components/ShopSwitcher';
+
+const navItems = [
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/containers', label: 'Containers', icon: Box },
+  { to: '/items', label: 'Items', icon: Tag },
+];
 
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
@@ -30,6 +36,28 @@ export default function DashboardLayout() {
             </div>
           </div>
         </div>
+
+        <nav className="mx-auto max-w-7xl px-4">
+          <div className="flex gap-1">
+            {navItems.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === '/'}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'border-purple-600 text-purple-600'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  }`
+                }
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </NavLink>
+            ))}
+          </div>
+        </nav>
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-8">
