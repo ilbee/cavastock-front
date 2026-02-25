@@ -7,6 +7,9 @@ import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+import ContainersPage from './pages/ContainersPage';
+import ContainerDetailPage from './pages/ContainerDetailPage';
+import ItemsPage from './pages/ItemsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +34,9 @@ export default function App() {
               <Route element={<ProtectedRoute />}>
                 <Route element={<DashboardLayout />}>
                   <Route path="/" element={<DashboardPage />} />
+                  <Route path="/containers" element={<ContainersPage />} />
+                  <Route path="/containers/:id" element={<ContainerDetailPage />} />
+                  <Route path="/items" element={<ItemsPage />} />
                 </Route>
               </Route>
             </Routes>
